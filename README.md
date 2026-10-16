@@ -17,10 +17,10 @@ Campuslands está creciendo a gran velocidad. Los procesos de gestión de aulas,
 
 | Nombre | Rol |
 |--------|-----|
-| *(completar)* | *(completar)* |
-| *(completar)* | *(completar)* |
-| *(completar)* | *(completar)* |
-| *(completar)* | *(completar)* |
+| *Oscar David Rodriguez Porras* | *Developer* |
+| *Christofer Darney Orduz Niño* | *Developer* |
+| *Santiago Baez Aguilar* | *Developer / Presenter* |
+|
 
 ---
 
