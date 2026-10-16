@@ -14,10 +14,14 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 480  # 8 horas para la hackaton
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
 
     # CORS
     FRONTEND_URL: str = "http://localhost:5173"
+
+    # IA
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "openai/gpt-oss-20b"
 
     model_config = SettingsConfigDict(
         env_file=".env",

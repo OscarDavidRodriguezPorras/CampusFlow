@@ -13,6 +13,7 @@ import LoansPage from './features/loans/LoansPage'
 import NewLoanPage from './features/loans/NewLoanPage'
 import IncidentsPage from './features/incidents/IncidentsPage'
 import NewIncidentPage from './features/incidents/NewIncidentPage'
+import UsersPage from './features/users/UsersPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +45,11 @@ export default function App() {
               <Route path="loans/new" element={<NewLoanPage />} />
               <Route path="incidents" element={<IncidentsPage />} />
               <Route path="incidents/new" element={<NewIncidentPage />} />
+              <Route path="users" element={
+                <ProtectedRoute roles={['admin']}>
+                  <UsersPage />
+                </ProtectedRoute>
+              } />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

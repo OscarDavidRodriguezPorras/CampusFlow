@@ -30,7 +30,6 @@ def get_current_user(
 
 
 def require_role(*roles: UserRole):
-    """Genera una dependencia que exige que el usuario tenga uno de los roles indicados."""
     def _check(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in roles:
             raise HTTPException(
@@ -41,11 +40,12 @@ def require_role(*roles: UserRole):
     return _check
 
 
+# staff_or_admin ahora es solo admin — se mantiene el nombre para no romper imports
 def require_staff_or_admin(current_user: User = Depends(get_current_user)) -> User:
-    if current_user.role not in (UserRole.staff, UserRole.admin):
+    if current_user.role != UserRole.admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Se requiere rol de personal o administrador",
+            detail="Se requiere rol de administrador",
         )
     return current_user
 

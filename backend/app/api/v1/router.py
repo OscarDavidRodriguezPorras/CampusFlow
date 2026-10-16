@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import health, auth, users, spaces, reservations, equipment, loans, incidents
+from app.api.v1.endpoints import health, auth, users, spaces, reservations, equipment, loans, incidents, ai
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -11,3 +11,4 @@ api_router.include_router(reservations.router, tags=["reservations"])
 api_router.include_router(equipment.router, tags=["equipment"])
 api_router.include_router(loans.router, tags=["loans"])
 api_router.include_router(incidents.router, tags=["incidents"])
+api_router.include_router(ai.router, tags=["ai"])

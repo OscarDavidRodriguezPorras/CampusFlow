@@ -26,7 +26,22 @@ def seed():
             print("   Si quieres recrearlos, borra las tablas y vuelve a ejecutar.")
             return
 
-        print("🌱 Creando datos de demostración...")
+        print("🌱 Creando usuario administrador...")
+
+        admin = User(
+            full_name="Administrador Campus",
+            email="admin@campusflow.co",
+            hashed_password=hash_password("Admin1234!"),
+            role=UserRole.admin,
+        )
+        db.add(admin)
+        db.commit()
+        db.refresh(admin)
+
+        print("\n✅ Administrador creado exitosamente.")
+        print("\n📋 Credenciales:")
+        print("   👤 Administrador: admin@campusflow.co  /  Admin1234!")
+        print("\n⚠️  Cambia la contraseña antes de cualquier despliegue.")
 
         # ── Usuarios ───────────────────────────────────────────────────────
         admin = User(
@@ -34,12 +49,6 @@ def seed():
             email="admin@campusflow.co",
             hashed_password=hash_password("Admin1234!"),
             role=UserRole.admin,
-        )
-        staff = User(
-            full_name="Carlos Pérez",
-            email="staff@campusflow.co",
-            hashed_password=hash_password("Staff1234!"),
-            role=UserRole.staff,
         )
         student1 = User(
             full_name="Ana García",
@@ -53,7 +62,7 @@ def seed():
             hashed_password=hash_password("Student1234!"),
             role=UserRole.student,
         )
-        db.add_all([admin, staff, student1, student2])
+        db.add_all([admin, student1, student2])
         db.flush()
         print("  ✅ Usuarios creados")
 
@@ -175,7 +184,7 @@ def seed():
                 priority=IncidentPriority.high,
                 status=IncidentStatus.assigned,
                 location="Aula 101 - Bloque A",
-                assigned_to_id=staff.id,
+                assigned_to_id=admin.id,
             ),
             Incident(
                 reporter_id=student2.id,
@@ -194,7 +203,7 @@ def seed():
                 priority=IncidentPriority.low,
                 status=IncidentStatus.resolved,
                 location="Cubículo 1 - Bloque C",
-                assigned_to_id=staff.id,
+                assigned_to_id=admin.id,
             ),
         ]
         db.add_all(incidents)
@@ -204,7 +213,6 @@ def seed():
         print("\n✅ Datos de demostración creados exitosamente.")
         print("\n📋 Cuentas de demostración:")
         print("   👤 Administrador: admin@campusflow.co  /  Admin1234!")
-        print("   👤 Personal:      staff@campusflow.co  /  Staff1234!")
         print("   👤 Estudiante 1:  ana@campusflow.co    /  Student1234!")
         print("   👤 Estudiante 2:  luis@campusflow.co   /  Student1234!")
 

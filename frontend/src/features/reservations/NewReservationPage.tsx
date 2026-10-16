@@ -7,6 +7,7 @@ import type { Space } from '../../types'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Loader2, ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
+import { useRoleTheme } from '../../hooks/useRoleTheme'
 
 const schema = z.object({
   space_id: z.coerce.number().min(1, 'Selecciona un espacio'),
@@ -19,7 +20,6 @@ const schema = z.object({
   message: 'La hora de inicio debe ser anterior a la hora de fin',
   path: ['end_time'],
 })
-
 type FormData = z.infer<typeof schema>
 
 export default function NewReservationPage() {
@@ -27,6 +27,13 @@ export default function NewReservationPage() {
   const qc = useQueryClient()
   const [searchParams] = useSearchParams()
   const [error, setError] = useState('')
+  const theme = useRoleTheme()
+
+  const inputStyle = {
+    background: 'rgba(255,255,255,0.04)',
+    border: `1px solid ${theme.accent}25`,
+    color: '#e2e8f0',
+  }
 
   const { data: spaces } = useQuery({
     queryKey: ['spaces'],
@@ -44,10 +51,7 @@ export default function NewReservationPage() {
       start_time: new Date(data.start_time).toISOString(),
       end_time: new Date(data.end_time).toISOString(),
     }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['reservations'] })
-      navigate('/reservations')
-    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['reservations'] }); navigate('/reservations') },
     onError: (e) => setError(getErrorMessage(e)),
   })
 
@@ -57,63 +61,79 @@ export default function NewReservationPage() {
         <ArrowLeft size={16} /> Volver
       </button>
 
-      <h1 className="text-2xl font-bold text-white mb-6">Nueva reserva</h1>
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-1.5 h-1.5 rounded-full" style={{ background: theme.accent }} />
+        <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: theme.accent }}>Nueva reserva</span>
+      </div>
+      <h1 className="text-2xl font-bold text-white mb-6">Reservar un espacio</h1>
 
-      <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4 rounded-xl border border-white/5 p-6"
-        style={{ background: 'rgba(15,20,45,0.7)', backdropFilter: 'blur(8px)' }}>
+      <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4 rounded-xl p-6"
+        style={{ background: theme.cardBg, backdropFilter: 'blur(10px)', border: `1px solid ${theme.accent}18` }}>
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1">Espacio</label>
-          <select {...register('space_id')}
-            className="w-full px-3 py-2.5 rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <select {...register('space_id')} className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            style={inputStyle}>
             <option value={0} className="bg-slate-900">Selecciona un espacio</option>
-            {spaces?.map(s => <option key={s.id} value={s.id} className="bg-slate-900">{s.name} — cap. {s.capacity}</option>)}
+            {spaces?.map(s => (
+              <option key={s.id} value={s.id} className="bg-slate-900">
+                {s.name} — cap. {s.capacity}
+              </option>
+            ))}
           </select>
-          {errors.space_id && <p className="text-red-500 text-xs mt-1">{errors.space_id.message}</p>}
+          {errors.space_id && <p className="text-red-400 text-xs mt-1">{errors.space_id.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">Título</label>
           <input {...register('title')} placeholder="Ej: Sesión de estudio"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+            className="w-full px-3 py-2.5 rounded-lg text-sm placeholder-slate-600 focus:outline-none"
+            style={inputStyle} />
+          {errors.title && <p className="text-red-400 text-xs mt-1">{errors.title.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Propósito (opcional)</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">Propósito (opcional)</label>
           <textarea {...register('purpose')} rows={2} placeholder="Describe el propósito de la reserva"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+            className="w-full px-3 py-2.5 rounded-lg text-sm placeholder-slate-600 focus:outline-none"
+            style={inputStyle} />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Número de asistentes</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">Número de asistentes</label>
           <input {...register('attendees_count')} type="number" min={1}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
-          {errors.attendees_count && <p className="text-red-500 text-xs mt-1">{errors.attendees_count.message}</p>}
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            style={inputStyle} />
+          {errors.attendees_count && <p className="text-red-400 text-xs mt-1">{errors.attendees_count.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Inicio</label>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Inicio</label>
             <input {...register('start_time')} type="datetime-local"
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
-            {errors.start_time && <p className="text-red-500 text-xs mt-1">{errors.start_time.message}</p>}
+              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+              style={{ ...inputStyle, colorScheme: 'dark' }} />
+            {errors.start_time && <p className="text-red-400 text-xs mt-1">{errors.start_time.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fin</label>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Fin</label>
             <input {...register('end_time')} type="datetime-local"
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
-            {errors.end_time && <p className="text-red-500 text-xs mt-1">{errors.end_time.message}</p>}
+              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+              style={{ ...inputStyle, colorScheme: 'dark' }} />
+            {errors.end_time && <p className="text-red-400 text-xs mt-1">{errors.end_time.message}</p>}
           </div>
         </div>
 
-        {error && <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2.5">
-          <p className="text-red-600 text-sm">{error}</p>
-        </div>}
+        {error && (
+          <div className="rounded-lg px-3 py-2.5 border border-red-500/20" style={{ background: 'rgba(239,68,68,0.08)' }}>
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        )}
 
         <button type="submit" disabled={isSubmitting}
-          className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
-          {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Creando...</> : 'Crear reserva'}
+          className="w-full font-medium py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 text-white"
+          style={{ background: theme.gradient, boxShadow: `0 4px 16px ${theme.accentGlow}` }}>
+          {isSubmitting ? <><Loader2 size={16} className="animate-spin" />Creando...</> : 'Crear reserva'}
         </button>
       </form>
     </div>

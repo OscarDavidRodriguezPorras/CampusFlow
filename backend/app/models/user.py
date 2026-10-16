@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 class UserRole(str, enum.Enum):
     student = "student"
-    staff = "staff"
     admin = "admin"
 
 

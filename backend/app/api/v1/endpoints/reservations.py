@@ -111,10 +111,10 @@ def update_reservation(
     if not reservation:
         raise HTTPException(status_code=404, detail="Reserva no encontrada")
 
-    # Solo staff/admin pueden aprobar o rechazar
+    # Solo admin puede aprobar o rechazar
     if data.status in (ReservationStatus.approved, ReservationStatus.rejected):
-        if current_user.role not in (UserRole.staff, UserRole.admin):
-            raise HTTPException(status_code=403, detail="Solo el personal puede aprobar o rechazar reservas")
+        if current_user.role != UserRole.admin:
+            raise HTTPException(status_code=403, detail="Solo un administrador puede aprobar o rechazar reservas")
 
     # Regla de negocio 3: Una reserva finalizada o cancelada no puede cambiar de estado
     if reservation.status in (ReservationStatus.finished, ReservationStatus.cancelled):
