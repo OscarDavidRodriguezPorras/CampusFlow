@@ -53,19 +53,21 @@ export default function NewReservationPage() {
 
   return (
     <div className="p-6 max-w-xl mx-auto">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-4">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 mb-4">
         <ArrowLeft size={16} /> Volver
       </button>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nueva reserva</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Nueva reserva</h1>
 
-      <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4 bg-white rounded-xl border border-gray-200 p-6">
+      <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4 rounded-xl border border-white/5 p-6"
+        style={{ background: 'rgba(15,20,45,0.7)', backdropFilter: 'blur(8px)' }}>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Espacio</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">Espacio</label>
           <select {...register('space_id')}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-            <option value={0}>Selecciona un espacio</option>
-            {spaces?.map(s => <option key={s.id} value={s.id}>{s.name} — cap. {s.capacity}</option>)}
+            className="w-full px-3 py-2.5 rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <option value={0} className="bg-slate-900">Selecciona un espacio</option>
+            {spaces?.map(s => <option key={s.id} value={s.id} className="bg-slate-900">{s.name} — cap. {s.capacity}</option>)}
           </select>
           {errors.space_id && <p className="text-red-500 text-xs mt-1">{errors.space_id.message}</p>}
         </div>

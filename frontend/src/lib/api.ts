@@ -16,7 +16,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response?.status === 401) {
+    // Solo redirigir al login si el 401 NO viene del propio endpoint de login
+    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
       localStorage.removeItem('cf_token')
       window.location.href = '/login'
     }

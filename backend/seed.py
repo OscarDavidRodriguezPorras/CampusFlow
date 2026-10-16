@@ -57,22 +57,35 @@ def seed():
         db.flush()
         print("  ✅ Usuarios creados")
 
-        # ── Espacios ───────────────────────────────────────────────────────
+        # ── Espacios reales de Campuslands ────────────────────────────────
         spaces = [
-            Space(name="Aula 101", space_type=SpaceType.classroom, location="Bloque A - Piso 1",
-                  capacity=30, description="Aula principal con proyector", amenities="proyector,aire acondicionado,tablero"),
-            Space(name="Aula 102", space_type=SpaceType.classroom, location="Bloque A - Piso 1",
-                  capacity=25, description="Aula secundaria", amenities="proyector,tablero"),
-            Space(name="Laboratorio 1", space_type=SpaceType.lab, location="Bloque B - Piso 2",
-                  capacity=20, description="Lab de programación con 20 PCs", amenities="computadores,proyector,aire acondicionado"),
-            Space(name="Laboratorio 2", space_type=SpaceType.lab, location="Bloque B - Piso 2",
-                  capacity=20, description="Lab de redes", amenities="computadores,equipos de red"),
-            Space(name="Cubículo 1", space_type=SpaceType.cubicle, location="Bloque C - Piso 1",
-                  capacity=6, description="Sala de trabajo grupal", amenities="tablero,televisor"),
-            Space(name="Cubículo 2", space_type=SpaceType.cubicle, location="Bloque C - Piso 1",
-                  capacity=6, description="Sala de trabajo grupal", amenities="tablero"),
-            Space(name="Sala de Reuniones", space_type=SpaceType.meeting_room, location="Bloque A - Piso 3",
-                  capacity=12, description="Sala para reuniones y presentaciones", amenities="proyector,videoconferencia,aire acondicionado"),
+            Space(name="Auditorio", space_type=SpaceType.classroom, location="Edificio principal",
+                  capacity=100, description="Auditorio principal para eventos y conferencias",
+                  amenities="proyector,sonido,aire acondicionado,escenario,sillas fijas"),
+            Space(name="Cosmos", space_type=SpaceType.lab, location="Bloque tecnología",
+                  capacity=25, description="Sala de innovación y desarrollo tecnológico",
+                  amenities="computadores,proyector,aire acondicionado,tablero"),
+            Space(name="Skilab", space_type=SpaceType.lab, location="Bloque tecnología",
+                  capacity=20, description="Laboratorio de habilidades tecnológicas",
+                  amenities="computadores,proyector,aire acondicionado"),
+            Space(name="Spooki", space_type=SpaceType.classroom, location="Bloque A",
+                  capacity=38, description="Aula de formación Spooki",
+                  amenities="proyector,tablero,aire acondicionado"),
+            Space(name="Apolo", space_type=SpaceType.classroom, location="Bloque A",
+                  capacity=34, description="Aula de formación Apolo",
+                  amenities="proyector,tablero,aire acondicionado"),
+            Space(name="Blanca", space_type=SpaceType.meeting_room, location="Bloque B",
+                  capacity=12, description="Sala de reuniones Blanca",
+                  amenities="proyector,tablero,videoconferencia"),
+            Space(name="Azul", space_type=SpaceType.cubicle, location="Bloque B",
+                  capacity=10, description="Sala de trabajo colaborativo Azul",
+                  amenities="tablero,televisor"),
+            Space(name="Amarillas Verdes", space_type=SpaceType.cubicle, location="Bloque C",
+                  capacity=6, description="Cubículos de trabajo grupal",
+                  amenities="tablero"),
+            Space(name="Artemis", space_type=SpaceType.classroom, location="Bloque A",
+                  capacity=32, description="Aula de formación Artemis",
+                  amenities="proyector,tablero,aire acondicionado"),
         ]
         db.add_all(spaces)
         db.flush()

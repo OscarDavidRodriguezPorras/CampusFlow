@@ -16,7 +16,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user or not verify_password(data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales incorrectas",
+            detail="El correo electrónico o la contraseña son incorrectos. Verifica tus datos e intenta de nuevo.",
         )
     if not user.is_active:
         raise HTTPException(
