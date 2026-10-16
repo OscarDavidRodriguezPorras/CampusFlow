@@ -1,0 +1,119 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { api, getErrorMessage } from '../../lib/api'
+import type { Space } from '../../types'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Loader2, ArrowLeft } from 'lucide-react'
+import { useState } from 'react'
+
+const schema = z.object({
+  space_id: z.coerce.number().min(1, 'Selecciona un espacio'),
+  title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
+  purpose: z.string().optional(),
+  attendees_count: z.coerce.number().min(1, 'Mínimo 1 asistente'),
+  start_time: z.string().min(1, 'Selecciona fecha de inicio'),
+  end_time: z.string().min(1, 'Selecciona fecha de fin'),
+}).refine(d => new Date(d.start_time) < new Date(d.end_time), {
+  message: 'La hora de inicio debe ser anterior a la hora de fin',
+  path: ['end_time'],
+})
+
+type FormData = z.infer<typeof schema>
+
+export default function NewReservationPage() {
+  const navigate = useNavigate()
+  const qc = useQueryClient()
+  const [searchParams] = useSearchParams()
+  const [error, setError] = useState('')
+
+  const { data: spaces } = useQuery({
+    queryKey: ['spaces'],
+    queryFn: () => api.get<Space[]>('/spaces').then(r => r.data),
+  })
+
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { space_id: Number(searchParams.get('space_id')) || 0, attendees_count: 1 },
+  })
+
+  const mutation = useMutation({
+    mutationFn: (data: FormData) => api.post('/reservations', {
+      ...data,
+      start_time: new Date(data.start_time).toISOString(),
+      end_time: new Date(data.end_time).toISOString(),
+    }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['reservations'] })
+      navigate('/reservations')
+    },
+    onError: (e) => setError(getErrorMessage(e)),
+  })
+
+  return (
+    <div className="p-6 max-w-xl mx-auto">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-4">
+        <ArrowLeft size={16} /> Volver
+      </button>
+
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nueva reserva</h1>
+
+      <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4 bg-white rounded-xl border border-gray-200 p-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Espacio</label>
+          <select {...register('space_id')}
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <option value={0}>Selecciona un espacio</option>
+            {spaces?.map(s => <option key={s.id} value={s.id}>{s.name} — cap. {s.capacity}</option>)}
+          </select>
+          {errors.space_id && <p className="text-red-500 text-xs mt-1">{errors.space_id.message}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+          <input {...register('title')} placeholder="Ej: Sesión de estudio"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Propósito (opcional)</label>
+          <textarea {...register('purpose')} rows={2} placeholder="Describe el propósito de la reserva"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Número de asistentes</label>
+          <input {...register('attendees_count')} type="number" min={1}
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          {errors.attendees_count && <p className="text-red-500 text-xs mt-1">{errors.attendees_count.message}</p>}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Inicio</label>
+            <input {...register('start_time')} type="datetime-local"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+            {errors.start_time && <p className="text-red-500 text-xs mt-1">{errors.start_time.message}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fin</label>
+            <input {...register('end_time')} type="datetime-local"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+            {errors.end_time && <p className="text-red-500 text-xs mt-1">{errors.end_time.message}</p>}
+          </div>
+        </div>
+
+        {error && <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2.5">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>}
+
+        <button type="submit" disabled={isSubmitting}
+          className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+          {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Creando...</> : 'Crear reserva'}
+        </button>
+      </form>
+    </div>
+  )
+}
