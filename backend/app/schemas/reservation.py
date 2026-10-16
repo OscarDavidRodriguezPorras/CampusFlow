@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import datetime
 from pydantic import BaseModel, field_validator, model_validator
 from app.models.reservation import ReservationStatus
@@ -48,7 +49,10 @@ class ReservationResponse(BaseModel):
 
 
 class ReservationDetail(ReservationResponse):
-    from app.schemas.user import UserResponse
-    from app.schemas.space import SpaceResponse
-    user: "UserResponse"
-    space: "SpaceResponse"
+    user: UserResponse
+    space: SpaceResponse
+
+
+from app.schemas.user import UserResponse  # noqa: E402
+from app.schemas.space import SpaceResponse  # noqa: E402
+ReservationDetail.model_rebuild()

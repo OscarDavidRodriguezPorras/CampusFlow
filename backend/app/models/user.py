@@ -39,5 +39,8 @@ class User(Base):
 
     reservations: Mapped[list["Reservation"]] = relationship(back_populates="user")
     loans: Mapped[list["Loan"]] = relationship(back_populates="user")
-    incidents: Mapped[list["Incident"]] = relationship(back_populates="reporter")
+    incidents: Mapped[list["Incident"]] = relationship(
+        back_populates="reporter",
+        foreign_keys="Incident.reporter_id",
+    )
     notifications: Mapped[list["Notification"]] = relationship(back_populates="user")
